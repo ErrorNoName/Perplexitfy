@@ -1,5 +1,7 @@
 # Perplexify CLI
 
+<img width="1037" height="377" alt="image" src="https://github.com/user-attachments/assets/40eaa9a2-dcdd-4d3e-b7ec-1f204c7e3972" />
+
 Perplexify CLI is a local terminal and HTTP wrapper around Footix's Perplexity
 Reverse Web Search stack. It uses the existing cookie-based Browser Bridge first
 and the reverse SSE client as fallback. It does not call the official
