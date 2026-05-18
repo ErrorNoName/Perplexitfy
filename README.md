@@ -1,5 +1,7 @@
 # Perplexify CLI
 
+<img width="1037" height="377" alt="image" src="https://github.com/user-attachments/assets/c08b18a8-4ab0-462d-a637-38a1960bfe73" />
+
 Perplexify CLI is a standalone terminal and HTTP wrapper around a cookie-based
 Perplexity reverse web client. It does not call the official
 `api.perplexity.ai` endpoint.
