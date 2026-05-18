@@ -1,9 +1,7 @@
 """Standalone Perplexity reverse client for exported Perplexify folders.
 
 This module is intentionally self-contained so the Go TUI can run from a
-portable Perplexify directory without importing ``scraping_lab`` or Footix.
-It uses the cookie-based reverse SSE endpoint. The richer Footix Browser Bridge
-is still used when the package is launched inside Footix.
+portable Perplexify directory. It uses the cookie-based reverse SSE endpoint.
 """
 
 from __future__ import annotations

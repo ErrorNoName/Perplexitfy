@@ -1,8 +1,7 @@
 """Perplexify smoke tests.
 
-The live mode intentionally uses the cookie already configured in
-``betbrain-core/.env`` or the private Perplexify store. It never prints the
-cookie value.
+The live mode intentionally uses the cookie configured in local `.env` or the
+private Perplexify store. It never prints the cookie value.
 """
 
 from __future__ import annotations
@@ -13,17 +12,9 @@ import json
 import subprocess
 import sys
 
-try:
-    from scraping_lab.perplexity_lab.perplexify.config import (
-        REPO_ROOT,
-        ensure_import_paths,
-        load_cookie,
-    )
-    from scraping_lab.perplexity_lab.perplexify.engine import run_query
-except ModuleNotFoundError:
-    from config import PROJECT_DIR as REPO_ROOT
-    from config import ensure_import_paths, load_cookie
-    from engine import run_query
+from config import PROJECT_DIR as REPO_ROOT
+from config import ensure_import_paths, load_cookie
+from engine import run_query
 
 SEARCH_TEST_QUERY = (
     "Find current Arsenal FC injury news. Answer briefly, then list exactly "
@@ -118,10 +109,7 @@ async def _check_live_queries(failures: list[str]) -> bool:
         failures.append("cookie missing; run perplexify_setup.bat or configure PPLX_COOKIE")
         return False
 
-    try:
-        from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
-    except ModuleNotFoundError:
-        from standalone_client import PerplexityClient
+    from standalone_client import PerplexityClient
 
     client = PerplexityClient(cookie=cookie.cookie)
     session = client.validate_session()

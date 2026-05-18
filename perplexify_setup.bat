@@ -3,8 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 set "PERPLEXIFY_DIR=%CD%"
-set "FOOTIX_ROOT=%~dp0..\..\.."
-set "PYTHONPATH=%PERPLEXIFY_DIR%;%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
+set "PYTHONPATH=%PERPLEXIFY_DIR%;%PYTHONPATH%"
 
 echo.
 echo ============================================================

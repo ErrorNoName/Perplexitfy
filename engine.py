@@ -12,17 +12,8 @@ import ast
 import operator
 from typing import Any
 
-try:
-    from scraping_lab.perplexity_lab.perplexify.config import ensure_import_paths, load_cookie
-    from scraping_lab.perplexity_lab.perplexify.models import (
-        MODEL_CHOICES,
-        MODE_CHOICES,
-        PerplexifyResult,
-        PerplexifySource,
-    )
-except ModuleNotFoundError:
-    from config import ensure_import_paths, load_cookie
-    from models import MODEL_CHOICES, MODE_CHOICES, PerplexifyResult, PerplexifySource
+from config import ensure_import_paths, load_cookie
+from models import MODEL_CHOICES, MODE_CHOICES, PerplexifyResult, PerplexifySource
 
 SEARCH_PROMPT = """\
 Answer this as a web research task.
@@ -112,10 +103,7 @@ async def run_query(
     prepared_query = _prepare_query(clean_query, mode=clean_mode, context=context)
     started = time.perf_counter()
     try:
-        try:
-            from scraping_lab.perplexity_lab.perplexity_client import ask_perplexity_async
-        except ModuleNotFoundError:
-            from standalone_client import ask_perplexity_async
+        from standalone_client import ask_perplexity_async
 
         response = await ask_perplexity_async(prepared_query, model=clean_model)
     except Exception as exc:

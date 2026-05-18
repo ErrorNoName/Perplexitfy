@@ -15,27 +15,10 @@ from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
-try:
-    from scraping_lab.perplexity_lab.perplexify.config import (
-        ENV_PATH,
-        PRIVATE_COOKIE_PATH,
-        ensure_import_paths,
-        load_cookie,
-        save_cookie,
-    )
-    from scraping_lab.perplexity_lab.perplexify.engine import run_query, validate_model
-    from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES
-    from scraping_lab.perplexity_lab.perplexify.render import (
-        console,
-        print_header,
-        print_models,
-        print_result,
-    )
-except ModuleNotFoundError:
-    from config import ENV_PATH, PRIVATE_COOKIE_PATH, ensure_import_paths, load_cookie, save_cookie
-    from engine import run_query, validate_model
-    from models import MODEL_CHOICES
-    from render import console, print_header, print_models, print_result
+from config import ENV_PATH, PRIVATE_COOKIE_PATH, ensure_import_paths, load_cookie, save_cookie
+from engine import run_query, validate_model
+from models import MODEL_CHOICES
+from render import console, print_header, print_models, print_result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -64,7 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command")
 
     p_setup = sub.add_parser("setup", help="Save and validate a Perplexity session cookie.")
-    p_setup.add_argument("--no-env", action="store_true", help="Do not mirror the cookie into betbrain-core/.env.")
+    p_setup.add_argument("--no-env", action="store_true", help="Do not mirror the cookie into local .env.")
     p_setup.set_defaults(func=cmd_setup)
 
     p_status = sub.add_parser("status", help="Validate session and show rate limits.")
@@ -141,10 +124,7 @@ def cmd_status(_: argparse.Namespace) -> int:
         console.print("[red]Cookie missing. Run `perplexify setup`.[/]")
         return 1
 
-    try:
-        from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
-    except ModuleNotFoundError:
-        from standalone_client import PerplexityClient
+    from standalone_client import PerplexityClient
 
     client = PerplexityClient(cookie=state.cookie)
     session = client.validate_session()
@@ -185,10 +165,7 @@ def cmd_status_json(_: argparse.Namespace) -> int:
         print(json.dumps(payload, ensure_ascii=True, indent=2))
         return 1
 
-    try:
-        from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
-    except ModuleNotFoundError:
-        from standalone_client import PerplexityClient
+    from standalone_client import PerplexityClient
 
     client = PerplexityClient(cookie=state.cookie)
     session = client.validate_session()
@@ -280,7 +257,7 @@ def cmd_json(args: argparse.Namespace) -> int:
 
 
 def cmd_serve(args: argparse.Namespace) -> int:
-    from scraping_lab.perplexity_lab.perplexify.server import run_server
+    from server import run_server
 
     run_server(host=args.host, port=args.port, reload=args.reload)
     return 0

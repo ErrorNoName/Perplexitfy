@@ -7,14 +7,9 @@ from typing import Literal
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-try:
-    from scraping_lab.perplexity_lab.perplexify.config import ensure_import_paths, load_cookie
-    from scraping_lab.perplexity_lab.perplexify.engine import run_query
-    from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES
-except ModuleNotFoundError:
-    from config import ensure_import_paths, load_cookie
-    from engine import run_query
-    from models import MODEL_CHOICES
+from config import ensure_import_paths, load_cookie
+from engine import run_query
+from models import MODEL_CHOICES
 
 
 class QueryRequest(BaseModel):
@@ -32,7 +27,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Perplexify CLI Local Bridge",
         version="1.0.0",
-        description="Local HTTP wrapper around the Footix Perplexity reverse-web stack.",
+        description="Local HTTP wrapper around the Perplexify reverse-web stack.",
     )
 
     @app.get("/health")
@@ -98,7 +93,7 @@ def _history_to_context(history: list[dict[str, str]]) -> str:
 def run_server(*, host: str = "127.0.0.1", port: int = 8787, reload: bool = False) -> None:
     import uvicorn
 
-    target = "scraping_lab.perplexity_lab.perplexify.server:create_app"
+    target = "server:create_app"
     uvicorn.run(target, factory=True, host=host, port=port, reload=reload)
 
 

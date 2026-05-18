@@ -163,7 +163,7 @@ func buildPythonPath(root string) string {
 	if root == "" {
 		return ""
 	}
-	parts := []string{root, filepath.Dir(root), filepath.Join(root, "betbrain-core")}
+	parts := []string{root, filepath.Dir(root)}
 	if current := os.Getenv("PYTHONPATH"); current != "" {
 		parts = append(parts, current)
 	}
@@ -175,23 +175,17 @@ func (c Client) pythonArgs(command string, extra ...string) []string {
 		args := []string{c.ScriptPath, command}
 		return append(args, extra...)
 	}
-	args := []string{"-m", "scraping_lab.perplexity_lab.perplexify", command}
+	args := []string{"cli.py", command}
 	return append(args, extra...)
 }
 
 func detectBackendRoot() (string, string) {
-	if explicit := os.Getenv("FOOTIX_ROOT"); explicit != "" {
-		return explicit, ""
-	}
 	candidates := candidateDirs()
 	for _, start := range candidates {
 		for dir := start; dir != filepath.Dir(dir); dir = filepath.Dir(dir) {
 			localScript := filepath.Join(dir, "cli.py")
-			if exists(localScript) && exists(filepath.Join(dir, ".env")) {
+			if exists(localScript) {
 				return dir, localScript
-			}
-			if exists(filepath.Join(dir, "scraping_lab", "perplexity_lab", "perplexify")) {
-				return dir, ""
 			}
 		}
 	}

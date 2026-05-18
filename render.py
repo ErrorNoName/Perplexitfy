@@ -14,10 +14,7 @@ from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
-try:
-    from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES, PerplexifyResult
-except ModuleNotFoundError:
-    from models import MODEL_CHOICES, PerplexifyResult
+from models import MODEL_CHOICES, PerplexifyResult
 
 console = Console()
 

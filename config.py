@@ -9,10 +9,7 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CORE_DIR = REPO_ROOT / "betbrain-core"
 LOCAL_ENV_PATH = PROJECT_DIR / ".env"
-LEGACY_ENV_PATH = CORE_DIR / ".env"
 ENV_PATH = LOCAL_ENV_PATH
 PRIVATE_COOKIE_PATH = PROJECT_DIR / "cookie.private.json"
 COOKIE_ENV_KEY = "PPLX_COOKIE"
@@ -34,7 +31,7 @@ def ensure_import_paths() -> None:
     """Make direct script execution behave like ``python -m`` from any folder."""
     import sys
 
-    for path in (PROJECT_DIR, PROJECT_DIR.parent, REPO_ROOT, CORE_DIR):
+    for path in (PROJECT_DIR, PROJECT_DIR.parent):
         raw = str(path)
         if raw not in sys.path:
             sys.path.insert(0, raw)
@@ -58,12 +55,11 @@ def load_cookie() -> CookieState:
     if env_cookie:
         return CookieState(env_cookie, "environment")
 
-    for env_path in (LOCAL_ENV_PATH, LEGACY_ENV_PATH):
-        env_values = _parse_env_file(env_path)
-        file_cookie = env_values.get(COOKIE_ENV_KEY, "").strip()
-        if file_cookie:
-            os.environ.setdefault(COOKIE_ENV_KEY, file_cookie)
-            return CookieState(file_cookie, str(env_path))
+    env_values = _parse_env_file(LOCAL_ENV_PATH)
+    file_cookie = env_values.get(COOKIE_ENV_KEY, "").strip()
+    if file_cookie:
+        os.environ.setdefault(COOKIE_ENV_KEY, file_cookie)
+        return CookieState(file_cookie, str(LOCAL_ENV_PATH))
 
     private_cookie = _load_private_cookie()
     if private_cookie:

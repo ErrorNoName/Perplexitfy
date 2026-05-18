@@ -1,19 +1,14 @@
 # Perplexify CLI
 
-<img width="1037" height="377" alt="image" src="https://github.com/user-attachments/assets/40eaa9a2-dcdd-4d3e-b7ec-1f204c7e3972" />
-
-Perplexify CLI is a local terminal and HTTP wrapper around Footix's Perplexity
-Reverse Web Search stack. It uses the existing cookie-based Browser Bridge first
-and the reverse SSE client as fallback. It does not call the official
+Perplexify CLI is a standalone terminal and HTTP wrapper around a cookie-based
+Perplexity reverse web client. It does not call the official
 `api.perplexity.ai` endpoint.
 
 ## Install
 
-Perplexify now carries its own quick scripts and local dependency file. From
-this folder:
+From this folder:
 
 ```powershell
-cd scraping_lab\perplexity_lab\perplexify
 .\perplexify_setup.bat
 ```
 
@@ -38,7 +33,7 @@ cookie setup flow.
 Manual setup:
 
 ```powershell
-python -m scraping_lab.perplexity_lab.perplexify setup
+python cli.py setup
 ```
 
 Paste the `__Secure-next-auth.session-token` cookie from a logged-in
@@ -49,22 +44,20 @@ For GitHub/public sharing, commit `.env.example` and never commit `.env`.
 Perplexify reads configuration in this order:
 
 1. Process environment variable `PPLX_COOKIE`
-2. Local `perplexify\.env`
-3. Legacy Footix `betbrain-core\.env` fallback
-4. Local `cookie.private.json`
+2. Local `.env`
+3. Local `cookie.private.json`
 
 Use `--no-env` if you only want the private CLI store:
 
 ```powershell
-python -m scraping_lab.perplexity_lab.perplexify setup --no-env
+python cli.py setup --no-env
 ```
 
 ## Commands
 
-Quick launcher from the repository root:
+Quick launcher:
 
 ```powershell
-cd scraping_lab\perplexity_lab\perplexify
 .\perplexify_launch.bat
 .\perplexify_launch.bat search "Latest PSG injury news"
 .\perplexify_launch.bat serve --host 127.0.0.1 --port 8787
@@ -75,11 +68,11 @@ With no arguments, `perplexify_launch.bat` opens chat mode.
 Direct Python commands:
 
 ```powershell
-python -m scraping_lab.perplexity_lab.perplexify status
-python -m scraping_lab.perplexity_lab.perplexify models
-python -m scraping_lab.perplexity_lab.perplexify ask "Explain Perplexity reverse SSE"
-python -m scraping_lab.perplexity_lab.perplexify search "Latest PSG injury news"
-python -m scraping_lab.perplexity_lab.perplexify chat --model sonar
+python cli.py status
+python cli.py models
+python cli.py ask "Explain Perplexity reverse SSE"
+python cli.py search "Latest PSG injury news"
+python cli.py chat --model sonar
 ```
 
 Search mode prints a formatted answer followed by a `Sources` table when the
@@ -129,24 +122,18 @@ The layout is responsive: wide terminals show side-by-side panels, while
 smaller terminals switch to stacked panels and a compact logo so the interface
 does not get crushed.
 
-## Direct Script Wrapper
-
-```powershell
-python scraping_lab\perplexity_lab\perplexify_cli.py search "latest Arsenal injuries"
-```
-
 ## JSON / Stdio Integration
 
 Use this when another program wants to launch Perplexify as a subprocess:
 
 ```powershell
-python -m scraping_lab.perplexity_lab.perplexify json --mode search --query "latest Ligue 1 injuries"
+python cli.py json --mode search --query "latest Ligue 1 injuries"
 ```
 
 If `--query` is omitted, stdin is read:
 
 ```powershell
-"latest Ligue 1 injuries" | python -m scraping_lab.perplexity_lab.perplexify json --mode search
+"latest Ligue 1 injuries" | python cli.py json --mode search
 ```
 
 Stable response shape:
@@ -169,7 +156,7 @@ Stable response shape:
 ## Local HTTP Bridge
 
 ```powershell
-python -m scraping_lab.perplexity_lab.perplexify serve --host 127.0.0.1 --port 8787
+python cli.py serve --host 127.0.0.1 --port 8787
 ```
 
 Endpoints:
@@ -197,7 +184,6 @@ Keep the default `127.0.0.1` bind for local extension/software usage.
 Run all launch paths plus live search/chat validation:
 
 ```powershell
-cd scraping_lab\perplexity_lab\perplexify
 .\perplexify_test.bat
 ```
 
@@ -205,12 +191,11 @@ The live test reads the cookie from the local `.env` first, validates the
 session, runs one search query, runs one chat query, and fails if no external
 source URLs are returned.
 
-## Standalone Export
+## Local Export
 
-To use Perplexify outside Footix, export a portable folder:
+Export a portable folder:
 
 ```powershell
-cd scraping_lab\perplexity_lab\perplexify
 .\perplexify_go_build.bat
 .\perplexify_export.bat C:\Users\jonha.UWUKIRTIS\Documents\Perplexitfy
 ```
@@ -230,16 +215,14 @@ python -m pip install -r requirements.txt
 .\go-tui\dist\perplexify.exe
 ```
 
-In standalone mode, the Go executable searches upward from its own location for
-a folder containing `cli.py` and `.env`, then calls `python cli.py ...`. It no
-longer requires `scraping_lab` or the Footix project path.
+The Go executable searches upward from its own location for a folder containing
+`cli.py`, then calls `python cli.py ...`.
 
 ## Public GitHub ZIP
 
 Create a public package without `.env`, cookies, or private files:
 
 ```powershell
-cd scraping_lab\perplexity_lab\perplexify
 .\perplexify_go_build.bat
 .\perplexify_export.bat --public --zip C:\Users\jonha.UWUKIRTIS\Documents\Perplexify-public
 ```
