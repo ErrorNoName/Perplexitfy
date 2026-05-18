@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 set "FOOTIX_ROOT=%~dp0..\..\.."
-set "PYTHONPATH=%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
+set "PYTHONPATH=%~dp0;%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
 
 if exist "go-tui\dist\perplexify.exe" (
   "go-tui\dist\perplexify.exe" %*

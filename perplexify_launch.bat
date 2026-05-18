@@ -2,13 +2,14 @@
 setlocal
 cd /d "%~dp0"
 
+set "PERPLEXIFY_DIR=%~dp0"
 set "FOOTIX_ROOT=%~dp0..\..\.."
-set "PYTHONPATH=%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
+set "PYTHONPATH=%PERPLEXIFY_DIR%;%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
 
 if "%~1"=="" (
-  python -m scraping_lab.perplexity_lab.perplexify chat
+  python cli.py chat
 ) else (
-  python -m scraping_lab.perplexity_lab.perplexify %*
+  python cli.py %*
 )
 
 exit /b %ERRORLEVEL%

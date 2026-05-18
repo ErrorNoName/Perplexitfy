@@ -1,7 +1,5 @@
 # Perplexify CLI
 
-<img width="1037" height="377" alt="image" src="https://github.com/user-attachments/assets/15bcd594-9e25-4d34-858c-f4afc48241fb" />
-
 Perplexify CLI is a local terminal and HTTP wrapper around Footix's Perplexity
 Reverse Web Search stack. It uses the existing cookie-based Browser Bridge first
 and the reverse SSE client as fallback. It does not call the official
@@ -204,3 +202,46 @@ cd scraping_lab\perplexity_lab\perplexify
 The live test reads the cookie from the local `.env` first, validates the
 session, runs one search query, runs one chat query, and fails if no external
 source URLs are returned.
+
+## Standalone Export
+
+To use Perplexify outside Footix, export a portable folder:
+
+```powershell
+cd scraping_lab\perplexity_lab\perplexify
+.\perplexify_go_build.bat
+.\perplexify_export.bat C:\Users\jonha.UWUKIRTIS\Documents\Perplexitfy
+```
+
+The exported folder contains:
+
+- the Python backend files;
+- the local `.env`;
+- `requirements.txt`;
+- the Go executable at `go-tui\dist\perplexify.exe` when built.
+
+From the exported folder:
+
+```powershell
+cd C:\Users\jonha.UWUKIRTIS\Documents\Perplexitfy
+python -m pip install -r requirements.txt
+.\go-tui\dist\perplexify.exe
+```
+
+In standalone mode, the Go executable searches upward from its own location for
+a folder containing `cli.py` and `.env`, then calls `python cli.py ...`. It no
+longer requires `scraping_lab` or the Footix project path.
+
+## Public GitHub ZIP
+
+Create a public package without `.env`, cookies, or private files:
+
+```powershell
+cd scraping_lab\perplexity_lab\perplexify
+.\perplexify_go_build.bat
+.\perplexify_export.bat --public --zip C:\Users\jonha.UWUKIRTIS\Documents\Perplexify-public
+```
+
+The public ZIP includes `.env.example`, source files, scripts, Go sources, and
+the built `go-tui\dist\perplexify.exe`. It intentionally excludes `.env` and
+`cookie.private.json`.

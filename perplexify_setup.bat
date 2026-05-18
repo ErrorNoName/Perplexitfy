@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 set "PERPLEXIFY_DIR=%CD%"
 set "FOOTIX_ROOT=%~dp0..\..\.."
-set "PYTHONPATH=%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
+set "PYTHONPATH=%PERPLEXIFY_DIR%;%FOOTIX_ROOT%;%FOOTIX_ROOT%\betbrain-core;%PYTHONPATH%"
 
 echo.
 echo ============================================================
@@ -27,7 +27,7 @@ if /I "%~1"=="check" (
     exit /b 1
   )
   echo [CHECK] Perplexify module import...
-  python -m scraping_lab.perplexity_lab.perplexify --help >nul
+  python cli.py --help >nul
   exit /b %ERRORLEVEL%
 )
 
@@ -42,5 +42,5 @@ if errorlevel 1 exit /b 1
 
 echo.
 echo [3/3] Launching Perplexify cookie setup...
-python -m scraping_lab.perplexity_lab.perplexify setup
+python cli.py setup
 exit /b %ERRORLEVEL%

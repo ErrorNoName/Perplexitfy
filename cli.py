@@ -15,21 +15,27 @@ from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 from rich.table import Table
 
-from scraping_lab.perplexity_lab.perplexify.config import (
-    ENV_PATH,
-    PRIVATE_COOKIE_PATH,
-    ensure_import_paths,
-    load_cookie,
-    save_cookie,
-)
-from scraping_lab.perplexity_lab.perplexify.engine import run_query, validate_model
-from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES
-from scraping_lab.perplexity_lab.perplexify.render import (
-    console,
-    print_header,
-    print_models,
-    print_result,
-)
+try:
+    from scraping_lab.perplexity_lab.perplexify.config import (
+        ENV_PATH,
+        PRIVATE_COOKIE_PATH,
+        ensure_import_paths,
+        load_cookie,
+        save_cookie,
+    )
+    from scraping_lab.perplexity_lab.perplexify.engine import run_query, validate_model
+    from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES
+    from scraping_lab.perplexity_lab.perplexify.render import (
+        console,
+        print_header,
+        print_models,
+        print_result,
+    )
+except ModuleNotFoundError:
+    from config import ENV_PATH, PRIVATE_COOKIE_PATH, ensure_import_paths, load_cookie, save_cookie
+    from engine import run_query, validate_model
+    from models import MODEL_CHOICES
+    from render import console, print_header, print_models, print_result
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -135,7 +141,10 @@ def cmd_status(_: argparse.Namespace) -> int:
         console.print("[red]Cookie missing. Run `perplexify setup`.[/]")
         return 1
 
-    from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
+    try:
+        from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
+    except ModuleNotFoundError:
+        from standalone_client import PerplexityClient
 
     client = PerplexityClient(cookie=state.cookie)
     session = client.validate_session()
@@ -176,7 +185,10 @@ def cmd_status_json(_: argparse.Namespace) -> int:
         print(json.dumps(payload, ensure_ascii=True, indent=2))
         return 1
 
-    from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
+    try:
+        from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
+    except ModuleNotFoundError:
+        from standalone_client import PerplexityClient
 
     client = PerplexityClient(cookie=state.cookie)
     session = client.validate_session()

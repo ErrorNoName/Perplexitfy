@@ -13,12 +13,17 @@ import json
 import subprocess
 import sys
 
-from scraping_lab.perplexity_lab.perplexify.config import (
-    REPO_ROOT,
-    ensure_import_paths,
-    load_cookie,
-)
-from scraping_lab.perplexity_lab.perplexify.engine import run_query
+try:
+    from scraping_lab.perplexity_lab.perplexify.config import (
+        REPO_ROOT,
+        ensure_import_paths,
+        load_cookie,
+    )
+    from scraping_lab.perplexity_lab.perplexify.engine import run_query
+except ModuleNotFoundError:
+    from config import PROJECT_DIR as REPO_ROOT
+    from config import ensure_import_paths, load_cookie
+    from engine import run_query
 
 SEARCH_TEST_QUERY = (
     "Find current Arsenal FC injury news. Answer briefly, then list exactly "
@@ -59,32 +64,32 @@ def main(argv: list[str] | None = None) -> int:
 def _check_cli_commands(failures: list[str]) -> None:
     print("[TEST] Python module help")
     _run_command(
-        [sys.executable, "-m", "scraping_lab.perplexity_lab.perplexify", "--help"],
+        [sys.executable, "cli.py", "--help"],
         failures,
         "module help failed",
     )
 
     print("[TEST] Python module models")
     _run_command(
-        [sys.executable, "-m", "scraping_lab.perplexity_lab.perplexify", "models"],
+        [sys.executable, "cli.py", "models"],
         failures,
         "module models failed",
     )
 
-    wrapper = REPO_ROOT / "scraping_lab" / "perplexity_lab" / "perplexify_cli.py"
-    print("[TEST] Wrapper script models")
-    _run_command(
-        [sys.executable, str(wrapper), "models"],
-        failures,
-        "wrapper models failed",
-    )
+    wrapper = REPO_ROOT / "perplexify_cli.py"
+    if wrapper.exists():
+        print("[TEST] Wrapper script models")
+        _run_command(
+            [sys.executable, str(wrapper), "models"],
+            failures,
+            "wrapper models failed",
+        )
 
     print("[TEST] JSON blank-query contract")
     proc = _run_command(
         [
             sys.executable,
-            "-m",
-            "scraping_lab.perplexity_lab.perplexify",
+            "cli.py",
             "json",
             "--mode",
             "search",
@@ -113,7 +118,10 @@ async def _check_live_queries(failures: list[str]) -> bool:
         failures.append("cookie missing; run perplexify_setup.bat or configure PPLX_COOKIE")
         return False
 
-    from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
+    try:
+        from scraping_lab.perplexity_lab.perplexity_client import PerplexityClient
+    except ModuleNotFoundError:
+        from standalone_client import PerplexityClient
 
     client = PerplexityClient(cookie=cookie.cookie)
     session = client.validate_session()

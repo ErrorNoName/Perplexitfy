@@ -17,5 +17,8 @@ if not exist dist mkdir dist
 go build -o dist\perplexify.exe .\cmd\perplexify
 if errorlevel 1 exit /b 1
 
+if not exist "..\go-tui\dist" mkdir "..\go-tui\dist"
+copy /Y "dist\perplexify.exe" "..\go-tui\dist\perplexify.exe" >nul
+
 echo [OK] Built go-tui\dist\perplexify.exe
 exit /b 0

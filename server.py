@@ -7,9 +7,14 @@ from typing import Literal
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from scraping_lab.perplexity_lab.perplexify.config import ensure_import_paths, load_cookie
-from scraping_lab.perplexity_lab.perplexify.engine import run_query
-from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES
+try:
+    from scraping_lab.perplexity_lab.perplexify.config import ensure_import_paths, load_cookie
+    from scraping_lab.perplexity_lab.perplexify.engine import run_query
+    from scraping_lab.perplexity_lab.perplexify.models import MODEL_CHOICES
+except ModuleNotFoundError:
+    from config import ensure_import_paths, load_cookie
+    from engine import run_query
+    from models import MODEL_CHOICES
 
 
 class QueryRequest(BaseModel):

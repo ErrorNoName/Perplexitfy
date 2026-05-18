@@ -51,6 +51,7 @@ type Client struct {
 	PythonExe    string
 	WorkingDir   string
 	PythonPath   string
+	ScriptPath   string
 	Timeout      time.Duration
 	DefaultModel string
 }
@@ -60,11 +61,12 @@ func NewClient() Client {
 	if pythonExe == "" {
 		pythonExe = "python"
 	}
-	root := detectFootixRoot()
+	root, script := detectBackendRoot()
 	return Client{
 		PythonExe:    pythonExe,
 		WorkingDir:   root,
 		PythonPath:   buildPythonPath(root),
+		ScriptPath:   script,
 		Timeout:      140 * time.Second,
 		DefaultModel: "sonar",
 	}
@@ -85,13 +87,11 @@ func (c Client) Ask(ctx context.Context, mode, query, model, contextText string)
 	runCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	args := []string{
-		"-m", "scraping_lab.perplexity_lab.perplexify",
-		"json",
+	args := c.pythonArgs("json",
 		"--mode", mode,
 		"--query", query,
 		"--model", model,
-	}
+	)
 	if strings.TrimSpace(contextText) != "" {
 		args = append(args, "--context", contextText)
 	}
@@ -141,7 +141,7 @@ func (c Client) Status(ctx context.Context) (Status, error) {
 	runCtx, cancel := context.WithTimeout(ctx, 45*time.Second)
 	defer cancel()
 
-	cmd := exec.CommandContext(runCtx, c.PythonExe, "-m", "scraping_lab.perplexity_lab.perplexify", "status-json")
+	cmd := exec.CommandContext(runCtx, c.PythonExe, c.pythonArgs("status-json")...)
 	cmd.Dir = c.WorkingDir
 	cmd.Env = os.Environ()
 	if c.PythonPath != "" {
@@ -163,27 +163,50 @@ func buildPythonPath(root string) string {
 	if root == "" {
 		return ""
 	}
-	parts := []string{root, filepath.Join(root, "betbrain-core")}
+	parts := []string{root, filepath.Dir(root), filepath.Join(root, "betbrain-core")}
 	if current := os.Getenv("PYTHONPATH"); current != "" {
 		parts = append(parts, current)
 	}
 	return strings.Join(parts, string(os.PathListSeparator))
 }
 
-func detectFootixRoot() string {
+func (c Client) pythonArgs(command string, extra ...string) []string {
+	if c.ScriptPath != "" {
+		args := []string{c.ScriptPath, command}
+		return append(args, extra...)
+	}
+	args := []string{"-m", "scraping_lab.perplexity_lab.perplexify", command}
+	return append(args, extra...)
+}
+
+func detectBackendRoot() (string, string) {
 	if explicit := os.Getenv("FOOTIX_ROOT"); explicit != "" {
-		return explicit
+		return explicit, ""
 	}
-	wd, err := os.Getwd()
-	if err != nil {
-		return "."
-	}
-	for dir := wd; dir != filepath.Dir(dir); dir = filepath.Dir(dir) {
-		if exists(filepath.Join(dir, "scraping_lab", "perplexity_lab", "perplexify")) {
-			return dir
+	candidates := candidateDirs()
+	for _, start := range candidates {
+		for dir := start; dir != filepath.Dir(dir); dir = filepath.Dir(dir) {
+			localScript := filepath.Join(dir, "cli.py")
+			if exists(localScript) && exists(filepath.Join(dir, ".env")) {
+				return dir, localScript
+			}
+			if exists(filepath.Join(dir, "scraping_lab", "perplexity_lab", "perplexify")) {
+				return dir, ""
+			}
 		}
 	}
-	return wd
+	return ".", ""
+}
+
+func candidateDirs() []string {
+	var dirs []string
+	if wd, err := os.Getwd(); err == nil {
+		dirs = append(dirs, wd)
+	}
+	if exe, err := os.Executable(); err == nil {
+		dirs = append(dirs, filepath.Dir(exe))
+	}
+	return dirs
 }
 
 func exists(path string) bool {

@@ -31,10 +31,10 @@ class CookieState:
 
 
 def ensure_import_paths() -> None:
-    """Make direct script execution behave like ``python -m`` from repo root."""
+    """Make direct script execution behave like ``python -m`` from any folder."""
     import sys
 
-    for path in (REPO_ROOT, CORE_DIR):
+    for path in (PROJECT_DIR, PROJECT_DIR.parent, REPO_ROOT, CORE_DIR):
         raw = str(path)
         if raw not in sys.path:
             sys.path.insert(0, raw)
