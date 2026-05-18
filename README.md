@@ -1,8 +1,5 @@
 # Perplexify CLI
 
-<img width="619" height="267" alt="image" src="https://github.com/user-attachments/assets/c6d52117-d6d0-48eb-9f27-22715adbd251" />
-
-
 Perplexify CLI is a local terminal and HTTP wrapper around Footix's Perplexity
 Reverse Web Search stack. It uses the existing cookie-based Browser Bridge first
 and the reverse SSE client as fallback. It does not call the official
@@ -88,6 +85,47 @@ reverse stack extracts web URLs.
 
 Chat mode keeps a small in-memory conversation context and animates the final
 answer in the terminal.
+
+## Modern Go Terminal App
+
+Perplexify also ships a modern keyboard-driven terminal app in Go under
+`go-tui/`. It uses the Python JSON backend for real Perplexity reverse-web
+queries, but the interface is a native terminal app with menus, panels, loading
+animations, and a dark coral theme.
+
+Install Go first from `https://go.dev/dl/`, then run from this folder:
+
+```powershell
+.\perplexify_go_run.bat
+```
+
+Build a Windows executable:
+
+```powershell
+.\perplexify_go_build.bat
+.\go-tui\dist\perplexify.exe
+```
+
+Launch the built executable when available, falling back to `go run`:
+
+```powershell
+.\perplexify_app.bat
+```
+
+Keyboard controls:
+
+- `up/down` or `j/k`: move in menus
+- `enter`: select, submit search, or send chat message
+- `esc`: return home
+- `q`: back/quit depending on screen
+- `ctrl+c`: quit immediately
+- `r`: refresh status screen
+
+The Go app intentionally uses no green UI states. The palette is black,
+coral/orange, white, grey, and small cyan accents for technical metadata.
+The layout is responsive: wide terminals show side-by-side panels, while
+smaller terminals switch to stacked panels and a compact logo so the interface
+does not get crushed.
 
 ## Direct Script Wrapper
 
